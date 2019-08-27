@@ -48,6 +48,29 @@ define([
   SegmentsLayer.prototype._registerEventHandlers = function() {
     var self = this;
 
+    this._peaks.on('segments.update', function(segment) {
+      var redraw = false;
+      var segmentGroup = self._segmentGroups[segment.id];
+      var frameOffset = self._view.getFrameOffset();
+      var width = self._view.getWidth();
+      var frameStartTime = self._view.pixelsToTime(frameOffset);
+      var frameEndTime   = self._view.pixelsToTime(frameOffset + width);
+
+      if (segmentGroup) {
+        self._removeSegment(segment);
+        redraw = true;
+      }
+
+      if (segment.isVisible(frameStartTime, frameEndTime)) {
+        self._addSegmentGroup(segment);
+        redraw = true;
+      }
+
+      if (redraw) {
+        self.updateSegments(frameStartTime, frameEndTime);
+      }
+    });
+
     this._peaks.on('segments.add', function(segments) {
       var frameOffset = self._view.getFrameOffset();
       var width = self._view.getWidth();
@@ -117,6 +140,7 @@ define([
 
       event.target.parent.label.show();
       self._layer.draw();
+      self._peaks.emit('segments.mouseenter', event.target._segment);
     });
 
     segmentGroup.waveformShape.on('mouseleave', function(event) {
@@ -127,6 +151,16 @@ define([
 
       event.target.parent.label.hide();
       self._layer.draw();
+      self._peaks.emit('segments.mouseleave', event.target._segment);
+    });
+
+    segmentGroup.waveformShape.on('click', function(event) {
+      if (!event.target.parent) {
+        self._peaks.logger('No parent for object:', event.target);
+        return;
+      }
+
+      self._peaks.emit('segments.click', event.target._segment);
     });
 
     segmentGroup.add(segmentGroup.waveformShape);
@@ -305,7 +339,7 @@ define([
     var count = 0;
 
     for (var segmentId in this._segmentGroups) {
-      if (this._segmentGroups.hasOwnProperty(segmentId)) {
+      if (Object.prototype.hasOwnProperty.call(this._segmentGroups, segmentId)) {
         var segment = this._segmentGroups[segmentId].segment;
 
         if (!segment.isVisible(startTime, endTime)) {
@@ -342,6 +376,29 @@ define([
 
   SegmentsLayer.prototype.setVisible = function(visible) {
     this._layer.setVisible(visible);
+  };
+
+  /**
+   * Adjusts the amplitude scale of any waveform segments shown in the view.
+   *
+   * @param {Number} scale The new amplitude scale factor
+   */
+
+  SegmentsLayer.prototype.setAmplitudeScale = function(scale) {
+    var updated = false;
+
+    for (var segmentId in this._segmentGroups) {
+      if (Object.prototype.hasOwnProperty.call(this._segmentGroups, segmentId)) {
+        var segmentGroup = this._segmentGroups[segmentId];
+
+        segmentGroup.waveformShape.setAmplitudeScale(scale);
+        updated = true;
+      }
+    }
+
+    if (updated) {
+      this._layer.draw();
+    }
   };
 
   return SegmentsLayer;

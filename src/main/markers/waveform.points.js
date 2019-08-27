@@ -78,31 +78,15 @@ define([
    */
 
   WaveformPoints.prototype._createPoint = function(options) {
-    if (options.hasOwnProperty('timestamp') || !options.hasOwnProperty('time')) {
+    if (Object.prototype.hasOwnProperty.call(options, 'timestamp') ||
+      !Object.prototype.hasOwnProperty.call(options, 'time')) {
       // eslint-disable-next-line max-len
       this._peaks.options.deprecationLogger("peaks.points.add(): The 'timestamp' attribute is deprecated; use 'time' instead");
       options.time = options.timestamp;
     }
 
-    if (!Utils.isValidTime(options.time)) {
-      // eslint-disable-next-line max-len
-      throw new TypeError('peaks.points.add(): time should be a numeric value');
-    }
-
-    if (options.time < 0) {
-      // eslint-disable-next-line max-len
-      throw new TypeError('peaks.points.add(): time should not be negative');
-    }
-
-    if (Utils.isNullOrUndefined(options.labelText)) {
-      // Set default label text
-      options.labelText = '';
-    }
-    else if (!Utils.isString(options.labelText)) {
-      throw new TypeError('peaks.points.add(): labelText must be a string');
-    }
-
     var point = new Point(
+      this,
       Utils.isNullOrUndefined(options.id) ? this._getNextPointId() : options.id,
       options.time,
       options.labelText,
@@ -176,7 +160,7 @@ define([
     points = points.map(function(pointOptions) {
       var point = self._createPoint(pointOptions);
 
-      if (self._pointsById.hasOwnProperty(point.id)) {
+      if (Object.prototype.hasOwnProperty.call(self._pointsById, point.id)) {
         throw new Error('peaks.points.add(): duplicate id');
       }
 

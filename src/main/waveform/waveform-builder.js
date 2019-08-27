@@ -1,72 +1,95 @@
 /**
  * @file
  *
- * Defines the {@link Waveform} class.
+ * Defines the {@link WaveformBuilder} class.
  *
- * @module peaks/waveform/waveform.core
+ * @module peaks/waveform/waveform-builder
  */
 
  define([
   'waveform-data',
   'waveform-data/webaudio',
-  'peaks/views/waveform.overview',
-  'peaks/views/waveform.zoomview',
   'peaks/waveform/waveform.utils'
   ], function(
     WaveformData,
     webaudioBuilder,
-    WaveformOverview,
-    WaveformZoomView,
     Utils) {
   'use strict';
 
   var isXhr2 = ('withCredentials' in new XMLHttpRequest());
 
   /**
-   * Bootstraps all our waveform components and manages initialisation as well
-   * as some component-wide events such as viewport resizing.
+   * Creates and returns a WaveformData object, either by requesting the
+   * waveform data from the server, or by creating the waveform data using the
+   * Web Audio API.
    *
    * @class
-   * @alias Waveform
+   * @alias WaveformBuilder
    *
    * @param {Peaks} peaks
    */
 
-  function Waveform(peaks) {
-    this.peaks = peaks;
+  function WaveformBuilder(peaks) {
+    this._peaks = peaks;
   }
 
   /**
-   * Loads the waveform data and creates the overview and zoom view waveform UI
-   * components.
+   * Options for requesting remote waveform data.
    *
-   * @private
-   * @param {Object} ui Container elements for the UI components. See the
-   *   <code>template</code> option.
-   * @param {HTMLElement} ui.player Overall container HTML element.
-   * @param {HTMLElement} ui.zoom HTML element container for the zoomable
-   *   waveform view.
-   * @param {HTMLElement} ui.overview HTML element container for the overview
-   *   waveform.
+   * @typedef {Object} RemoteWaveformDataOptions
+   * @global
+   * @property {String=} arraybuffer
+   * @property {String=} json
    */
 
-  Waveform.prototype.init = function(ui) {
-    this.ui = ui; // See getUiElements in main.js
-    this.onResize = this.onResize.bind(this);
+  /**
+   * Options for the Web Audio waveform builder.
+   *
+   * @typedef {Object} WaveformBuilderOptions
+   * @global
+   * @property {Number=} scale
+   * @property {Number=} amplitudeScale
+   */
 
-    this._getRemoteData(this.peaks.options);
-  };
+  /**
+   * Options for [WaveformBuilder.init]{@link WaveformBuilder#init}.
+   *
+   * @typedef {Object} WaveformBuilderInitOptions
+   * @global
+   * @property {RemoteWaveformDataOptions=} dataUri
+   * @property {AudioContext=} audioContext
+   * @property {WaveformBuilderOptions=} waveformBuilderOptions
+   * @property {Boolean=} withCredentials
+   * @property {Array<Number>=} zoomLevels
+   */
 
-  Waveform.prototype._getRemoteData = function(options) {
+  /**
+   * Callback for receiving the waveform data.
+   *
+   * @callback WaveformBuilderInitCallback
+   * @global
+   * @param {Error} error
+   * @param {WaveformData} waveformData
+   */
+
+  /**
+   * Loads or creates the waveform data.
+   *
+   * @private
+   * @param {WaveformBuilderInitOptions} options
+   * @param {WaveformBuilderInitCallback} callback
+   */
+
+  WaveformBuilder.prototype.init = function(options, callback) {
     if (options.dataUri && options.audioContext) {
       // eslint-disable-next-line max-len
       throw new Error('Peaks.init(): You must pass an audioContext or dataUri to render waveform data, not both');
     }
-    else if (options.dataUri) {
-      return this._getRemoteWaveformData(options);
+    if (options.dataUri) {
+      return this._getRemoteWaveformData(options, callback);
     }
     else if (options.audioContext) {
-      return this._buildWaveformDataUsingWebAudio(options);
+      return this._buildWaveformDataUsingWebAudio(options, callback);
     }
     else {
       // eslint-disable-next-line max-len
@@ -87,6 +110,7 @@
    * @param {String} options.dataUri.json Waveform data URL (JSON format)
    * @param {String} options.defaultUriFormat Either 'arraybuffer' (for binary
    *   data) or 'json'
+   * @param {WaveformBuilderInitCallback} callback
    *
    * @see Refer to the <a href="https://github.com/bbc/audiowaveform/blob/master/doc/DataFormat.md">data format documentation</a>
    *   for details of the binary and JSON waveform data formats.
@@ -94,7 +118,7 @@
 
   /* eslint-enable max-len */
 
-  Waveform.prototype._getRemoteWaveformData = function(options) {
+  WaveformBuilder.prototype._getRemoteWaveformData = function(options, callback) {
     var self = this;
     var dataUri = null;
     var requestType = null;
@@ -126,20 +150,23 @@
       throw new Error('Peaks.init(): Unable to determine a compatible dataUri format for this browser');
     }
 
-    var xhr = self._createXHR(url, requestType, function(response) {
+    var xhr = self._createXHR(url, requestType, options.withCredentials, function(response) {
       if (this.readyState !== 4) {
         return;
       }
 
       if (this.status !== 200) {
-        self._handleRemoteData(
+        callback(
           new Error('Unable to fetch remote data. HTTP status ' + this.status)
         );
 
         return;
       }
 
-      self._handleRemoteData(null, response.target, xhr);
+      callback(null, WaveformData.create(response.target));
+    },
+    function(error) {
+      callback(new Error('XHR Failed'));
     });
 
     xhr.send();
@@ -152,9 +179,10 @@
    * @param {Object} options
    * @param {AudioContext} options.audioContext
    * @param {HTMLMediaElement} options.mediaElement
+   * @param {WaveformBuilderInitCallback} callback
    */
 
-  Waveform.prototype._buildWaveformDataUsingWebAudio = function(options) {
+  WaveformBuilder.prototype._buildWaveformDataUsingWebAudio = function(options, callback) {
     var self = this;
 
     var audioContext = window.AudioContext || window.webkitAudioContext;
@@ -164,29 +192,52 @@
       throw new TypeError('Peaks.init(): The audioContext option must be a valid AudioContext');
     }
 
-    if (options.waveformBuilderOptions.scale !== options.zoomLevels[0]) {
-      options.waveformBuilderOptions.scale = options.zoomLevels[0];
+    var waveformBuilderOptions;
+
+    if (options.waveformBuilderOptions) {
+      waveformBuilderOptions = options.waveformBuilderOptions;
+    }
+    else {
+      waveformBuilderOptions = {
+        scale: options.zoomLevels[0]
+      };
+    }
+
+    if (waveformBuilderOptions.scale !== options.zoomLevels[0]) {
+      waveformBuilderOptions.scale = options.zoomLevels[0];
     }
 
     // If the media element has already selected which source to play, its
     // currentSrc attribute will contain the source media URL. Otherwise,
     // we wait for a canplay event to tell us when the media is ready.
 
-    var mediaSourceUrl = self.peaks.player.getCurrentSource();
+    var mediaSourceUrl = self._peaks.player.getCurrentSource();
 
     if (mediaSourceUrl) {
+        // #2 use preparedAudioBuffer
+        if (options.preparedAudioBuffer) {
+            waveformBuilderOptions.preparedAudioBuffer = options.preparedAudioBuffer;
+            waveformBuilderOptions.lastStart = options.lastStart;
+            waveformBuilderOptions.lastEnd = options.lastEnd;
+            waveformBuilderOptions.isDelete = options.isDelete;
+        }
+
       self._requestAudioAndBuildWaveformData(
         mediaSourceUrl,
         options.audioContext,
-        options.waveformBuilderOptions
+        waveformBuilderOptions,
+        options.withCredentials,
+        callback
       );
     }
     else {
-      self.peaks.once('player_canplay', function(player) {
+      self._peaks.once('player_canplay', function(player) {
         self._requestAudioAndBuildWaveformData(
           player.getCurrentSource(),
           options.audioContext,
-          options.waveformBuilderOptions
+          waveformBuilderOptions,
+          options.withCredentials,
+          callback
         );
       });
     }
@@ -200,24 +251,26 @@
    * @param {url} The media source URL
    * @param {AudioContext} audioContext
    * @param {Object} waveformBuilderOptions
+   * @param {Boolean} withCredentials
+   * @param {WaveformBuilderInitCallback} callback
    */
 
-  Waveform.prototype._requestAudioAndBuildWaveformData = function(url,
-    audioContext, waveformBuilderOptions) {
+  WaveformBuilder.prototype._requestAudioAndBuildWaveformData = function(url,
+    audioContext, waveformBuilderOptions, withCredentials, callback) {
     var self = this;
 
     if (!url) {
-      self.peaks.logger('Peaks.init(): The mediaElement src is invalid');
+      self._peaks.logger('Peaks.init(): The mediaElement src is invalid');
       return;
     }
 
-    var xhr = self._createXHR(url, 'arraybuffer', function(response) {
+    var xhr = self._createXHR(url, 'arraybuffer', withCredentials, function(response) {
       if (this.readyState !== 4) {
         return;
       }
 
       if (this.status !== 200) {
-        self._handleRemoteData(
+        callback(
           new Error('Unable to fetch remote data. HTTP status ' + this.status)
         );
 
@@ -228,8 +281,11 @@
         audioContext,
         response.target.response,
         waveformBuilderOptions,
-        self._handleRemoteData.bind(self)
+        callback
       );
+    },
+    function(error) {
+      callback(new Error('XHR Failed'));
     });
 
     xhr.send();
@@ -239,13 +295,14 @@
    * @private
    * @param {String} url
    * @param {String} requestType
+   * @param {Boolean} withCredentials
    * @param {Function} onLoad
+   * @param {Function} onError
    *
    * @returns {XMLHttpRequest}
    */
 
-  Waveform.prototype._createXHR = function(url, requestType, onLoad) {
-    var self = this;
+  WaveformBuilder.prototype._createXHR = function(url, requestType, withCredentials, onLoad, onError) {
     var xhr = new XMLHttpRequest();
 
     // open an XHR request to the data source file
@@ -262,112 +319,14 @@
     }
 
     xhr.onload = onLoad;
+    xhr.onerror = onError;
 
-    xhr.onerror = function(err) {
-      // Allow the application to call instance.on('error') before
-      // emitting the event.
-      setTimeout(function() {
-        self.peaks.emit('error', new Error('XHR Failed'));
-      }, 0);
-    };
-
-    if (isXhr2 && this.peaks.options.withCredentials) {
+    if (isXhr2 && withCredentials) {
       xhr.withCredentials = true;
     }
 
     return xhr;
   };
 
-  /**
-   *
-   * @private
-   * @param err {Error}
-   * @param remoteData {WaveformData|ProgressEvent}
-   * @param xhr {XMLHttpRequest}
-   */
-
-  Waveform.prototype._handleRemoteData = function(err, remoteData, xhr) {
-    if (err) {
-      this.peaks.emit('error', err);
-      return;
-    }
-
-    this.originalWaveformData = null;
-
-    try {
-      this.originalWaveformData = remoteData instanceof WaveformData ?
-                                  remoteData :
-                                  WaveformData.create(remoteData);
-
-      this.waveformOverview = new WaveformOverview(
-        this.originalWaveformData,
-        this.ui.overview,
-        this.peaks
-      );
-
-      this.waveformZoomView = new WaveformZoomView(
-        this.originalWaveformData,
-        this.ui.zoom,
-        this.peaks
-      );
-
-      // TODO: Deprecated, use peaks.ready instead.
-      this.peaks.emit('segments.ready');
-
-      this.peaks.emit('peaks.ready');
-    }
-    catch (e) {
-      this.peaks.emit('error', e);
-      return;
-    }
-
-    this._bindEvents();
-  };
-
-  Waveform.prototype._bindEvents = function() {
-    var self = this;
-
-    self.peaks.on('user_seek', function(time) {
-      self.peaks.player.seek(time);
-    });
-
-    window.addEventListener('resize', self.onResize);
-  };
-
-  Waveform.prototype.destroy = function() {
-    if (this.waveformOverview) {
-      this.waveformOverview.destroy();
-      this.waveformOverview = null;
-    }
-
-    if (this.waveformZoomView) {
-      this.waveformZoomView.destroy();
-      this.waveformZoomView = null;
-    }
-
-    window.removeEventListener('resize', this.onResize);
-
-    if (this.resizeTimeoutId) {
-      clearTimeout(this.resizeTimeoutId);
-      this.resizeTimeoutId = null;
-    }
-  };
-
-  Waveform.prototype.onResize = function() {
-    var self = this;
-
-    self.peaks.emit('window_resize');
-
-    if (self.resizeTimeoutId) {
-      clearTimeout(self.resizeTimeoutId);
-    }
-
-    self.resizeTimeoutId = setTimeout(function() {
-      var width = self.ui.player.clientWidth;
-
-      self.peaks.emit('window_resize_complete', width);
-    }, 500);
-  };
-
-  return Waveform;
+  return WaveformBuilder;
 });

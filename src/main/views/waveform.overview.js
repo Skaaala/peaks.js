@@ -40,58 +40,66 @@ define([
   function WaveformOverview(waveformData, container, peaks) {
     var self = this;
 
-    self.originalWaveformData = waveformData;
-    self.container = container;
-    self.peaks = peaks;
+    self._originalWaveformData = waveformData;
+    self._container = container;
+    self._peaks = peaks;
 
-    self.options = peaks.options;
-    self.width = container.clientWidth;
-    self.height = container.clientHeight || self.options.height;
+    self._options = peaks.options;
 
-    self.data = waveformData.resample(self.width);
+    self._width = container.clientWidth;
+    self._height = container.clientHeight || self._options.height;
 
-    self.stage = new Konva.Stage({
+    if (self._width !== 0) {
+      self._data = waveformData.resample(self._width);
+    }
+    else {
+      self._data = waveformData;
+    }
+
+    self._resizeTimeoutId = null;
+
+    self._stage = new Konva.Stage({
       container: container,
-      width: self.width,
-      height: self.height
+      width: self._width,
+      height: self._height
     });
 
-    self.waveformLayer = new Konva.FastLayer();
+    self._waveformLayer = new Konva.FastLayer();
 
-    self.axis = new WaveformAxis(self, self.waveformLayer);
+    self._axis = new WaveformAxis(self, self._waveformLayer, peaks.options);
 
-    self.createWaveform();
+    self._createWaveform();
 
     self._segmentsLayer = new SegmentsLayer(peaks, self, false);
-    self._segmentsLayer.addToStage(self.stage);
+    self._segmentsLayer.addToStage(self._stage);
 
     self._pointsLayer = new PointsLayer(peaks, self, false, false);
-    self._pointsLayer.addToStage(self.stage);
+    self._pointsLayer.addToStage(self._stage);
 
-    self.createHighlightRect();
+    self._createHighlightLayer();
 
     self._playheadLayer = new PlayheadLayer(
       peaks,
       self,
       false, // showPlayheadTime
-      self.options.mediaElement.currentTime
+      self._options.mediaElement.currentTime
     );
 
-    self._playheadLayer.addToStage(self.stage);
+    self._playheadLayer.addToStage(self._stage);
 
-    self.mouseDragHandler = new MouseDragHandler(self.stage, {
+    self._mouseDragHandler = new MouseDragHandler(self._stage, {
       onMouseDown: function(mousePosX) {
-        mousePosX = Utils.clamp(mousePosX, 0, self.width);
+        mousePosX = Utils.clamp(mousePosX, 0, self._width);
 
         var time = self.pixelsToTime(mousePosX);
 
         self._playheadLayer.updatePlayheadTime(time);
 
-        self.peaks.emit('user_seek', time);
+        peaks.player.seek(time);
       },
 
       onMouseMove: function(mousePosX) {
-        mousePosX = Utils.clamp(mousePosX, 0, self.width);
+        mousePosX = Utils.clamp(mousePosX, 0, self._width);
 
         var time = self.pixelsToTime(mousePosX);
 
@@ -99,17 +107,17 @@ define([
         // than if we only use the player_time_update event.
         self._playheadLayer.updatePlayheadTime(time);
 
-        self.peaks.emit('user_seek', time);
+        self._peaks.player.seek(time);
       }
     });
 
     // Events
 
-    self.peaks.on('player_play', function(time) {
+    peaks.on('player_play', function(time) {
       self._playheadLayer.updatePlayheadTime(time);
     });
 
-    self.peaks.on('player_pause', function(time) {
+    peaks.on('player_pause', function(time) {
       self._playheadLayer.stop(time);
     });
 
@@ -118,24 +126,47 @@ define([
     });
 
     peaks.on('zoomview.displaying', function(startTime, endTime) {
-      self.updateHighlightRect(startTime, endTime);
+      if (!self._highlightRect) {
+        self._createHighlightRect(startTime, endTime);
+      }
+
+      self._updateHighlightRect(startTime, endTime);
     });
 
     peaks.on('window_resize', function() {
-      self.container.hidden = true;
+      if (self._resizeTimeoutId) {
+        clearTimeout(self._resizeTimeoutId);
+        self._resizeTimeoutId = null;
+      }
+
+      // Avoid resampling waveform data to zero width
+      if (self._container.clientWidth !== 0) {
+        self._width = self._container.clientWidth;
+        self._stage.setWidth(self._width);
+
+        self._resizeTimeoutId = setTimeout(function() {
+          self._width = self._container.clientWidth;
+          self._data = self._originalWaveformData.resample(self._width);
+          self._stage.setWidth(self._width);
+
+          self._updateWaveform();
+        }, 500);
+      }
     });
-
-    peaks.on('window_resize_complete', function(width) {
-      self.width = width;
-      self.data = self.originalWaveformData.resample(self.width);
-      self.stage.setWidth(self.width);
-      self.container.removeAttribute('hidden');
-
-      self._playheadLayer.zoomLevelChanged();
-    });
-
-    peaks.emit('waveform_ready.overview', this);
   }
+
+  WaveformOverview.prototype.setWaveformData = function(waveformData) {
+    this._originalWaveformData = waveformData;
+
+    if (this._width !== 0) {
+      this._data = waveformData.resample(this._width);
+    }
+    else {
+      this._data = waveformData;
+    }
+
+    this._updateWaveform();
+  };
 
   /**
    * Returns the pixel index for a given time, for the current zoom level.
@@ -145,7 +176,7 @@ define([
    */
 
   WaveformOverview.prototype.timeToPixels = function(time) {
-    return Math.floor(time * this.data.adapter.sample_rate / this.data.adapter.scale);
+    return Math.floor(time * this._data.adapter.sample_rate / this._data.adapter.scale);
   };
 
   /**
@@ -156,7 +187,7 @@ define([
    */
 
   WaveformOverview.prototype.pixelsToTime = function(pixels) {
-    return pixels * this.data.adapter.scale / this.data.adapter.sample_rate;
+    return pixels * this._data.adapter.scale / this._data.adapter.sample_rate;
   };
 
   /**
@@ -173,7 +204,7 @@ define([
    */
 
   WaveformOverview.prototype.getWidth = function() {
-    return this.width;
+    return this._width;
   };
 
   /**
@@ -181,7 +212,23 @@ define([
    */
 
   WaveformOverview.prototype.getHeight = function() {
-    return this.height;
+    return this._height;
+  };
+
+  /**
+   * Adjusts the amplitude scale of waveform shown in the view, which allows
+   * users to zoom the waveform vertically.
+   *
+   * @param {Number} scale The new amplitude scale factor
+   */
+
+  WaveformOverview.prototype.setAmplitudeScale = function(scale) {
+    if (!Utils.isNumber(scale) || !Number.isFinite(scale)) {
+       throw new Error('view.setAmplitudeScale(): Scale must be a valid number');
+    }
+
+    this._waveformShape.setAmplitudeScale(scale);
+    this._waveformLayer.draw();
   };
 
   /**
@@ -189,7 +236,7 @@ define([
    */
 
   WaveformOverview.prototype.getWaveformData = function() {
-    return this.data;
+    return this._data;
   };
 
   /**
@@ -197,33 +244,41 @@ define([
    * and adds it to the wav
    */
 
-  WaveformOverview.prototype.createWaveform = function() {
-    this.waveformShape = new WaveformShape({
-      color: this.options.overviewWaveformColor,
+  WaveformOverview.prototype._createWaveform = function() {
+    this._waveformShape = new WaveformShape({
+      color: this._options.overviewWaveformColor,
       view: this
     });
 
-    this.waveformLayer.add(this.waveformShape);
-    this.stage.add(this.waveformLayer);
+    this._waveformLayer.add(this._waveformShape);
+    this._stage.add(this._waveformLayer);
   };
 
-  WaveformOverview.prototype.createHighlightRect = function() {
-    this.highlightLayer = new Konva.FastLayer();
+  WaveformOverview.prototype._createHighlightLayer = function() {
+    this._highlightLayer = new Konva.FastLayer();
+    this._stage.add(this._highlightLayer);
+  };
 
-    this.highlightRect = new Konva.Rect({
-      x: 0,
+  WaveformOverview.prototype._createHighlightRect = function(startTime, endTime) {
+    this._highlightRectStartTime = startTime;
+    this._highlightRectEndTime = endTime;
+
+    var startOffset = this.timeToPixels(startTime);
+    var endOffset   = this.timeToPixels(endTime);
+
+    this._highlightRect = new Konva.Rect({
+      startOffset: 0,
       y: 11,
-      width: 0,
-      stroke: this.options.overviewHighlightRectangleColor,
+      width: endOffset - startOffset,
+      stroke: this._options.overviewHighlightRectangleColor,
       strokeWidth: 1,
-      height: this.height - (11 * 2),
-      fill: this.options.overviewHighlightRectangleColor,
+      height: this._height - (11 * 2),
+      fill: this._options.overviewHighlightRectangleColor,
       opacity: 0.3,
       cornerRadius: 2
     });
 
-    this.highlightLayer.add(this.highlightRect);
-    this.stage.add(this.highlightLayer);
+    this._highlightLayer.add(this._highlightRect);
   };
 
   /**
@@ -233,22 +288,60 @@ define([
    * @param {Number} endTime The end of the highlight region, in seconds.
    */
 
-  WaveformOverview.prototype.updateHighlightRect = function(startTime, endTime) {
+  WaveformOverview.prototype._updateHighlightRect = function(startTime, endTime) {
+    this._highlightRectStartTime = startTime;
+    this._highlightRectEndTime = endTime;
+
     var startOffset = this.timeToPixels(startTime);
     var endOffset   = this.timeToPixels(endTime);
 
-    this.highlightRect.setAttrs({
+    this._highlightRect.setAttrs({
       x:     startOffset,
       width: endOffset - startOffset
     });
 
-    this.highlightLayer.draw();
+    this._highlightLayer.draw();
+  };
+
+  WaveformOverview.prototype._updateWaveform = function() {
+    this._waveformLayer.draw();
+
+    var playheadTime = this._peaks.player.getCurrentTime();
+
+    this._playheadLayer.updatePlayheadTime(playheadTime);
+
+    if (this._highlightRect) {
+      this._updateHighlightRect(
+        this._highlightRectStartTime,
+        this._highlightRectEndTime
+      );
+    }
+
+    var frameStartTime = 0;
+    var frameEndTime   = this.pixelsToTime(this._width);
+
+    this._pointsLayer.updatePoints(frameStartTime, frameEndTime);
+    this._segmentsLayer.updateSegments(frameStartTime, frameEndTime);
+  };
+
+  WaveformOverview.prototype.setWaveformColor = function(color) {
+    this._waveformShape.setWaveformColor(color);
+    this._waveformLayer.draw();
+  };
+
+  WaveformOverview.prototype.showPlayheadTime = function(show) {
+    this._playheadLayer.showPlayheadTime(show);
   };
 
   WaveformOverview.prototype.destroy = function() {
-    if (this.stage) {
-      this.stage.destroy();
-      this.stage = null;
+    if (this._resizeTimeoutId) {
+      clearTimeout(this._resizeTimeoutId);
+      this._resizeTimeoutId = null;
+    }
+
+    if (this._stage) {
+      this._stage.destroy();
+      this._stage = null;
     }
   };
 

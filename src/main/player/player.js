@@ -57,6 +57,10 @@ define(['peaks/waveform/waveform.utils'], function(Utils) {
       self._peaks.emit('player_canplay', self);
     });
 
+    self._addMediaListener('error', function(event) {
+      self._peaks.emit('player_error', event.target.error);
+    });
+
     self._interval = null;
   }
 
@@ -131,6 +135,13 @@ define(['peaks/waveform/waveform.utils'], function(Utils) {
 
   Player.prototype.isPlaying = function() {
     return this._isPlaying;
+  };
+
+  /**
+   * @returns {boolean} <code>true</code> if seeking
+   */
+  Player.prototype.isSeeking = function() {
+    return this._mediaElement.seeking;
   };
 
   /**
