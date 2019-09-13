@@ -814,51 +814,7 @@
 
 }).call(this,_dereq_('_process'))
 
-},{"_process":60}],3:[function(_dereq_,module,exports){
-(function (global){
-var WORKER_ENABLED = !!(global === global.window && global.URL && global.Blob && global.Worker);
-
-function InlineWorker(func, self) {
-  var _this = this;
-  var functionBody;
-
-  self = self || {};
-
-  if (WORKER_ENABLED) {
-    functionBody = func.toString().trim().match(
-      /^function\s*\w*\s*\([\w\s,]*\)\s*{([\w\W]*?)}$/
-    )[1];
-
-    return new global.Worker(global.URL.createObjectURL(
-      new global.Blob([ functionBody ], { type: "text/javascript" })
-    ));
-  }
-
-  function postMessage(data) {
-    setTimeout(function() {
-      _this.onmessage({ data: data });
-    }, 0);
-  }
-
-  this.self = self;
-  this.self.postMessage = postMessage;
-
-  setTimeout(func.bind(self, self), 0);
-}
-
-InlineWorker.prototype.postMessage = function postMessage(data) {
-  var _this = this;
-
-  setTimeout(function() {
-    _this.self.onmessage({ data: data });
-  }, 0);
-};
-
-module.exports = InlineWorker;
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
-},{}],4:[function(_dereq_,module,exports){
+},{"_process":59}],3:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Global_1 = _dereq_("./Global");
@@ -1004,7 +960,7 @@ var Animation = (function () {
 }());
 exports.Animation = Animation;
 
-},{"./Global":12}],5:[function(_dereq_,module,exports){
+},{"./Global":11}],4:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -1194,7 +1150,7 @@ BaseLayer.prototype.nodeType = 'BaseLayer';
 Factory_1.Factory.addGetterSetter(BaseLayer, 'clearBeforeDraw', true);
 Util_1.Collection.mapMethods(BaseLayer);
 
-},{"./Canvas":6,"./Container":7,"./Factory":10,"./Node":15,"./Util":19}],6:[function(_dereq_,module,exports){
+},{"./Canvas":5,"./Container":6,"./Factory":9,"./Node":14,"./Util":18}],5:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -1329,7 +1285,7 @@ var HitCanvas = (function (_super) {
 }(Canvas));
 exports.HitCanvas = HitCanvas;
 
-},{"./Context":8,"./Factory":10,"./Global":12,"./Util":19,"./Validators":20}],7:[function(_dereq_,module,exports){
+},{"./Context":7,"./Factory":9,"./Global":11,"./Util":18,"./Validators":19}],6:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -1726,7 +1682,7 @@ Factory_1.Factory.addGetterSetter(Container, 'clipHeight', undefined, Validators
 Factory_1.Factory.addGetterSetter(Container, 'clipFunc');
 Util_1.Collection.mapMethods(Container);
 
-},{"./DragAndDrop":9,"./Factory":10,"./Node":15,"./Util":19,"./Validators":20}],8:[function(_dereq_,module,exports){
+},{"./DragAndDrop":8,"./Factory":9,"./Node":14,"./Util":18,"./Validators":19}],7:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -2242,7 +2198,7 @@ var HitContext = (function (_super) {
 }(Context));
 exports.HitContext = HitContext;
 
-},{"./Global":12,"./Util":19}],9:[function(_dereq_,module,exports){
+},{"./Global":11,"./Util":18}],8:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Animation_1 = _dereq_("./Animation");
@@ -2339,7 +2295,7 @@ if (Global_1.Konva.isBrowser) {
     window.addEventListener('touchend', exports.DD._endDragAfter, false);
 }
 
-},{"./Animation":4,"./Global":12}],10:[function(_dereq_,module,exports){
+},{"./Animation":3,"./Global":11}],9:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Util_1 = _dereq_("./Util");
@@ -2460,7 +2416,7 @@ exports.Factory = {
     }
 };
 
-},{"./Util":19,"./Validators":20}],11:[function(_dereq_,module,exports){
+},{"./Util":18,"./Validators":19}],10:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -2516,7 +2472,7 @@ FastLayer.prototype.nodeType = 'FastLayer';
 Global_1._registerNode(FastLayer);
 Util_1.Collection.mapMethods(FastLayer);
 
-},{"./BaseLayer":5,"./Container":7,"./Global":12,"./Util":19}],12:[function(_dereq_,module,exports){
+},{"./BaseLayer":4,"./Container":6,"./Global":11,"./Util":18}],11:[function(_dereq_,module,exports){
 (function (global){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -2603,7 +2559,7 @@ exports._registerNode = function (NodeClass) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],13:[function(_dereq_,module,exports){
+},{}],12:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -2640,7 +2596,7 @@ Group.prototype.nodeType = 'Group';
 Global_1._registerNode(Group);
 Util_1.Collection.mapMethods(Group);
 
-},{"./Container":7,"./Global":12,"./Util":19}],14:[function(_dereq_,module,exports){
+},{"./Container":6,"./Global":11,"./Util":18}],13:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -2813,7 +2769,7 @@ Global_1._registerNode(Layer);
 Factory_1.Factory.addGetterSetter(Layer, 'hitGraphEnabled', true, Validators_1.getBooleanValidator());
 Util_1.Collection.mapMethods(Layer);
 
-},{"./BaseLayer":5,"./Canvas":6,"./Container":7,"./Factory":10,"./Global":12,"./Shape":16,"./Util":19,"./Validators":20}],15:[function(_dereq_,module,exports){
+},{"./BaseLayer":4,"./Canvas":5,"./Container":6,"./Factory":9,"./Global":11,"./Shape":15,"./Util":18,"./Validators":19}],14:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Util_1 = _dereq_("./Util");
@@ -4099,7 +4055,7 @@ Factory_1.Factory.backCompat(Node, {
 });
 Util_1.Collection.mapMethods(Node);
 
-},{"./Canvas":6,"./DragAndDrop":9,"./Factory":10,"./Global":12,"./Util":19,"./Validators":20}],16:[function(_dereq_,module,exports){
+},{"./Canvas":5,"./DragAndDrop":8,"./Factory":9,"./Global":11,"./Util":18,"./Validators":19}],15:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -4593,7 +4549,7 @@ Factory_1.Factory.backCompat(Shape, {
 });
 Util_1.Collection.mapMethods(Shape);
 
-},{"./Factory":10,"./Global":12,"./Node":15,"./Util":19,"./Validators":20}],17:[function(_dereq_,module,exports){
+},{"./Factory":9,"./Global":11,"./Node":14,"./Util":18,"./Validators":19}],16:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -5154,7 +5110,7 @@ Stage.prototype.nodeType = STAGE;
 Global_2._registerNode(Stage);
 Factory_1.Factory.addGetterSetter(Stage, 'container');
 
-},{"./Canvas":6,"./Container":7,"./DragAndDrop":9,"./Factory":10,"./Global":12,"./Util":19}],18:[function(_dereq_,module,exports){
+},{"./Canvas":5,"./Container":6,"./DragAndDrop":8,"./Factory":9,"./Global":11,"./Util":18}],17:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Util_1 = _dereq_("./Util");
@@ -5671,7 +5627,7 @@ exports.Easings = {
     }
 };
 
-},{"./Animation":4,"./Global":12,"./Node":15,"./Util":19}],19:[function(_dereq_,module,exports){
+},{"./Animation":3,"./Global":11,"./Node":14,"./Util":18}],18:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Global_1 = _dereq_("./Global");
@@ -6376,7 +6332,7 @@ exports.Util = {
     }
 };
 
-},{"./Global":12}],20:[function(_dereq_,module,exports){
+},{"./Global":11}],19:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Global_1 = _dereq_("./Global");
@@ -6527,7 +6483,7 @@ function getComponentValidator(components) {
 }
 exports.getComponentValidator = getComponentValidator;
 
-},{"./Global":12,"./Util":19}],21:[function(_dereq_,module,exports){
+},{"./Global":11,"./Util":18}],20:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Global_1 = _dereq_("./Global");
@@ -6562,7 +6518,7 @@ exports.Konva = Object.assign(Global_1.Konva, {
     Easings: Tween_1.Easings
 });
 
-},{"./Animation":4,"./Container":7,"./DragAndDrop":9,"./FastLayer":11,"./Global":12,"./Group":13,"./Layer":14,"./Node":15,"./Shape":16,"./Stage":17,"./Tween":18,"./Util":19}],22:[function(_dereq_,module,exports){
+},{"./Animation":3,"./Container":6,"./DragAndDrop":8,"./FastLayer":10,"./Global":11,"./Group":12,"./Layer":13,"./Node":14,"./Shape":15,"./Stage":16,"./Tween":17,"./Util":18}],21:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var _CoreInternals_1 = _dereq_("./_CoreInternals");
@@ -6644,7 +6600,7 @@ exports.Konva = Object.assign(_CoreInternals_1.Konva, {
     }
 });
 
-},{"./_CoreInternals":21,"./filters/Blur":23,"./filters/Brighten":24,"./filters/Contrast":25,"./filters/Emboss":26,"./filters/Enhance":27,"./filters/Grayscale":28,"./filters/HSL":29,"./filters/HSV":30,"./filters/Invert":31,"./filters/Kaleidoscope":32,"./filters/Mask":33,"./filters/Noise":34,"./filters/Pixelate":35,"./filters/Posterize":36,"./filters/RGB":37,"./filters/RGBA":38,"./filters/Sepia":39,"./filters/Solarize":40,"./filters/Threshold":41,"./shapes/Arc":43,"./shapes/Arrow":44,"./shapes/Circle":45,"./shapes/Ellipse":46,"./shapes/Image":47,"./shapes/Label":48,"./shapes/Line":49,"./shapes/Path":50,"./shapes/Rect":51,"./shapes/RegularPolygon":52,"./shapes/Ring":53,"./shapes/Sprite":54,"./shapes/Star":55,"./shapes/Text":56,"./shapes/TextPath":57,"./shapes/Transformer":58,"./shapes/Wedge":59}],23:[function(_dereq_,module,exports){
+},{"./_CoreInternals":20,"./filters/Blur":22,"./filters/Brighten":23,"./filters/Contrast":24,"./filters/Emboss":25,"./filters/Enhance":26,"./filters/Grayscale":27,"./filters/HSL":28,"./filters/HSV":29,"./filters/Invert":30,"./filters/Kaleidoscope":31,"./filters/Mask":32,"./filters/Noise":33,"./filters/Pixelate":34,"./filters/Posterize":35,"./filters/RGB":36,"./filters/RGBA":37,"./filters/Sepia":38,"./filters/Solarize":39,"./filters/Threshold":40,"./shapes/Arc":42,"./shapes/Arrow":43,"./shapes/Circle":44,"./shapes/Ellipse":45,"./shapes/Image":46,"./shapes/Label":47,"./shapes/Line":48,"./shapes/Path":49,"./shapes/Rect":50,"./shapes/RegularPolygon":51,"./shapes/Ring":52,"./shapes/Sprite":53,"./shapes/Star":54,"./shapes/Text":55,"./shapes/TextPath":56,"./shapes/Transformer":57,"./shapes/Wedge":58}],22:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Factory_1 = _dereq_("../Factory");
@@ -7345,7 +7301,7 @@ exports.Blur = function Blur(imageData) {
 };
 Factory_1.Factory.addGetterSetter(Node_1.Node, 'blurRadius', 0, Validators_1.getNumberValidator(), Factory_1.Factory.afterSetFilter);
 
-},{"../Factory":10,"../Node":15,"../Validators":20}],24:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Node":14,"../Validators":19}],23:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Factory_1 = _dereq_("../Factory");
@@ -7361,7 +7317,7 @@ exports.Brighten = function (imageData) {
 };
 Factory_1.Factory.addGetterSetter(Node_1.Node, 'brightness', 0, Validators_1.getNumberValidator(), Factory_1.Factory.afterSetFilter);
 
-},{"../Factory":10,"../Node":15,"../Validators":20}],25:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Node":14,"../Validators":19}],24:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Factory_1 = _dereq_("../Factory");
@@ -7399,7 +7355,7 @@ exports.Contrast = function (imageData) {
 };
 Factory_1.Factory.addGetterSetter(Node_1.Node, 'contrast', 0, Validators_1.getNumberValidator(), Factory_1.Factory.afterSetFilter);
 
-},{"../Factory":10,"../Node":15,"../Validators":20}],26:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Node":14,"../Validators":19}],25:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Factory_1 = _dereq_("../Factory");
@@ -7505,7 +7461,7 @@ Factory_1.Factory.addGetterSetter(Node_1.Node, 'embossWhiteLevel', 0.5, Validato
 Factory_1.Factory.addGetterSetter(Node_1.Node, 'embossDirection', 'top-left', null, Factory_1.Factory.afterSetFilter);
 Factory_1.Factory.addGetterSetter(Node_1.Node, 'embossBlend', false, null, Factory_1.Factory.afterSetFilter);
 
-},{"../Factory":10,"../Node":15,"../Util":19,"../Validators":20}],27:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Node":14,"../Util":18,"../Validators":19}],26:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Factory_1 = _dereq_("../Factory");
@@ -7592,7 +7548,7 @@ exports.Enhance = function (imageData) {
 };
 Factory_1.Factory.addGetterSetter(Node_1.Node, 'enhance', 0, Validators_1.getNumberValidator(), Factory_1.Factory.afterSetFilter);
 
-},{"../Factory":10,"../Node":15,"../Validators":20}],28:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Node":14,"../Validators":19}],27:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Grayscale = function (imageData) {
@@ -7605,7 +7561,7 @@ exports.Grayscale = function (imageData) {
     }
 };
 
-},{}],29:[function(_dereq_,module,exports){
+},{}],28:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Factory_1 = _dereq_("../Factory");
@@ -7633,7 +7589,7 @@ exports.HSL = function (imageData) {
     }
 };
 
-},{"../Factory":10,"../Node":15,"../Validators":20}],30:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Node":14,"../Validators":19}],29:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Factory_1 = _dereq_("../Factory");
@@ -7661,7 +7617,7 @@ Factory_1.Factory.addGetterSetter(Node_1.Node, 'hue', 0, Validators_1.getNumberV
 Factory_1.Factory.addGetterSetter(Node_1.Node, 'saturation', 0, Validators_1.getNumberValidator(), Factory_1.Factory.afterSetFilter);
 Factory_1.Factory.addGetterSetter(Node_1.Node, 'value', 0, Validators_1.getNumberValidator(), Factory_1.Factory.afterSetFilter);
 
-},{"../Factory":10,"../Node":15,"../Validators":20}],31:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Node":14,"../Validators":19}],30:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Invert = function (imageData) {
@@ -7673,7 +7629,7 @@ exports.Invert = function (imageData) {
     }
 };
 
-},{}],32:[function(_dereq_,module,exports){
+},{}],31:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Factory_1 = _dereq_("../Factory");
@@ -7809,7 +7765,7 @@ exports.Kaleidoscope = function (imageData) {
 Factory_1.Factory.addGetterSetter(Node_1.Node, 'kaleidoscopePower', 2, Validators_1.getNumberValidator(), Factory_1.Factory.afterSetFilter);
 Factory_1.Factory.addGetterSetter(Node_1.Node, 'kaleidoscopeAngle', 0, Validators_1.getNumberValidator(), Factory_1.Factory.afterSetFilter);
 
-},{"../Factory":10,"../Node":15,"../Util":19,"../Validators":20}],33:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Node":14,"../Util":18,"../Validators":19}],32:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Factory_1 = _dereq_("../Factory");
@@ -7953,7 +7909,7 @@ exports.Mask = function (imageData) {
 };
 Factory_1.Factory.addGetterSetter(Node_1.Node, 'threshold', 0, Validators_1.getNumberValidator(), Factory_1.Factory.afterSetFilter);
 
-},{"../Factory":10,"../Node":15,"../Validators":20}],34:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Node":14,"../Validators":19}],33:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Factory_1 = _dereq_("../Factory");
@@ -7969,7 +7925,7 @@ exports.Noise = function (imageData) {
 };
 Factory_1.Factory.addGetterSetter(Node_1.Node, 'noise', 0.2, Validators_1.getNumberValidator(), Factory_1.Factory.afterSetFilter);
 
-},{"../Factory":10,"../Node":15,"../Validators":20}],35:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Node":14,"../Validators":19}],34:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Factory_1 = _dereq_("../Factory");
@@ -8034,7 +7990,7 @@ exports.Pixelate = function (imageData) {
 };
 Factory_1.Factory.addGetterSetter(Node_1.Node, 'pixelSize', 8, Validators_1.getNumberValidator(), Factory_1.Factory.afterSetFilter);
 
-},{"../Factory":10,"../Node":15,"../Util":19,"../Validators":20}],36:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Node":14,"../Util":18,"../Validators":19}],35:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Factory_1 = _dereq_("../Factory");
@@ -8048,7 +8004,7 @@ exports.Posterize = function (imageData) {
 };
 Factory_1.Factory.addGetterSetter(Node_1.Node, 'levels', 0.5, Validators_1.getNumberValidator(), Factory_1.Factory.afterSetFilter);
 
-},{"../Factory":10,"../Node":15,"../Validators":20}],37:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Node":14,"../Validators":19}],36:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Factory_1 = _dereq_("../Factory");
@@ -8091,7 +8047,7 @@ Factory_1.Factory.addGetterSetter(Node_1.Node, 'green', 0, function (val) {
 });
 Factory_1.Factory.addGetterSetter(Node_1.Node, 'blue', 0, Validators_1.RGBComponent, Factory_1.Factory.afterSetFilter);
 
-},{"../Factory":10,"../Node":15,"../Validators":20}],38:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Node":14,"../Validators":19}],37:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Factory_1 = _dereq_("../Factory");
@@ -8144,7 +8100,7 @@ Factory_1.Factory.addGetterSetter(Node_1.Node, 'alpha', 1, function (val) {
     }
 });
 
-},{"../Factory":10,"../Node":15,"../Validators":20}],39:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Node":14,"../Validators":19}],38:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Sepia = function (imageData) {
@@ -8159,7 +8115,7 @@ exports.Sepia = function (imageData) {
     }
 };
 
-},{}],40:[function(_dereq_,module,exports){
+},{}],39:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Solarize = function (imageData) {
@@ -8188,7 +8144,7 @@ exports.Solarize = function (imageData) {
     } while (--y);
 };
 
-},{}],41:[function(_dereq_,module,exports){
+},{}],40:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Factory_1 = _dereq_("../Factory");
@@ -8202,13 +8158,13 @@ exports.Threshold = function (imageData) {
 };
 Factory_1.Factory.addGetterSetter(Node_1.Node, 'threshold', 0.5, Validators_1.getNumberValidator(), Factory_1.Factory.afterSetFilter);
 
-},{"../Factory":10,"../Node":15,"../Validators":20}],42:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Node":14,"../Validators":19}],41:[function(_dereq_,module,exports){
 var Konva = _dereq_('./_FullInternals').Konva;
 Konva._injectGlobal(Konva);
 exports['default'] = Konva;
 module.exports = exports['default'];
 
-},{"./_FullInternals":22}],43:[function(_dereq_,module,exports){
+},{"./_FullInternals":21}],42:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -8268,7 +8224,7 @@ Factory_1.Factory.addGetterSetter(Arc, 'angle', 0, Validators_1.getNumberValidat
 Factory_1.Factory.addGetterSetter(Arc, 'clockwise', false, Validators_1.getBooleanValidator());
 Util_1.Collection.mapMethods(Arc);
 
-},{"../Factory":10,"../Global":12,"../Shape":16,"../Util":19,"../Validators":20}],44:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Global":11,"../Shape":15,"../Util":18,"../Validators":19}],43:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -8363,7 +8319,7 @@ Factory_1.Factory.addGetterSetter(Arrow, 'pointerWidth', 10, Validators_1.getNum
 Factory_1.Factory.addGetterSetter(Arrow, 'pointerAtBeginning', false);
 Util_1.Collection.mapMethods(Arrow);
 
-},{"../Factory":10,"../Global":12,"../Util":19,"../Validators":20,"./Line":49}],45:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Global":11,"../Util":18,"../Validators":19,"./Line":48}],44:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -8421,7 +8377,7 @@ Global_1._registerNode(Circle);
 Factory_1.Factory.addGetterSetter(Circle, 'radius', 0, Validators_1.getNumberValidator());
 Util_1.Collection.mapMethods(Circle);
 
-},{"../Factory":10,"../Global":12,"../Shape":16,"../Util":19,"../Validators":20}],46:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Global":11,"../Shape":15,"../Util":18,"../Validators":19}],45:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -8483,7 +8439,7 @@ Factory_1.Factory.addGetterSetter(Ellipse, 'radiusX', 0, Validators_1.getNumberV
 Factory_1.Factory.addGetterSetter(Ellipse, 'radiusY', 0, Validators_1.getNumberValidator());
 Util_1.Collection.mapMethods(Ellipse);
 
-},{"../Factory":10,"../Global":12,"../Shape":16,"../Util":19,"../Validators":20}],47:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Global":11,"../Shape":15,"../Util":18,"../Validators":19}],46:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -8586,7 +8542,7 @@ Factory_1.Factory.addGetterSetter(Image, 'cropWidth', 0, Validators_1.getNumberV
 Factory_1.Factory.addGetterSetter(Image, 'cropHeight', 0, Validators_1.getNumberValidator());
 Util_1.Collection.mapMethods(Image);
 
-},{"../Factory":10,"../Global":12,"../Shape":16,"../Util":19,"../Validators":20}],48:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Global":11,"../Shape":15,"../Util":18,"../Validators":19}],47:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -8790,7 +8746,7 @@ Factory_1.Factory.addGetterSetter(Tag, 'pointerHeight', 0, Validators_1.getNumbe
 Factory_1.Factory.addGetterSetter(Tag, 'cornerRadius', 0, Validators_1.getNumberValidator());
 Util_1.Collection.mapMethods(Tag);
 
-},{"../Factory":10,"../Global":12,"../Group":13,"../Shape":16,"../Util":19,"../Validators":20}],49:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Global":11,"../Group":12,"../Shape":15,"../Util":18,"../Validators":19}],48:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -8934,7 +8890,7 @@ Factory_1.Factory.addGetterSetter(Line, 'tension', 0, Validators_1.getNumberVali
 Factory_1.Factory.addGetterSetter(Line, 'points', [], Validators_1.getNumberArrayValidator());
 Util_1.Collection.mapMethods(Line);
 
-},{"../Factory":10,"../Global":12,"../Shape":16,"../Util":19,"../Validators":20}],50:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Global":11,"../Shape":15,"../Util":18,"../Validators":19}],49:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -9547,7 +9503,7 @@ Global_1._registerNode(Path);
 Factory_1.Factory.addGetterSetter(Path, 'data');
 Util_1.Collection.mapMethods(Path);
 
-},{"../Factory":10,"../Global":12,"../Shape":16,"../Util":19}],51:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Global":11,"../Shape":15,"../Util":18}],50:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -9602,7 +9558,7 @@ Global_1._registerNode(Rect);
 Factory_1.Factory.addGetterSetter(Rect, 'cornerRadius', 0, Validators_1.getNumberValidator());
 Util_1.Collection.mapMethods(Rect);
 
-},{"../Factory":10,"../Global":12,"../Shape":16,"../Util":19,"../Validators":20}],52:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Global":11,"../Shape":15,"../Util":18,"../Validators":19}],51:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -9663,7 +9619,7 @@ Factory_1.Factory.addGetterSetter(RegularPolygon, 'radius', 0, Validators_1.getN
 Factory_1.Factory.addGetterSetter(RegularPolygon, 'sides', 0, Validators_1.getNumberValidator());
 Util_1.Collection.mapMethods(RegularPolygon);
 
-},{"../Factory":10,"../Global":12,"../Shape":16,"../Util":19,"../Validators":20}],53:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Global":11,"../Shape":15,"../Util":18,"../Validators":19}],52:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -9721,7 +9677,7 @@ Factory_1.Factory.addGetterSetter(Ring, 'innerRadius', 0, Validators_1.getNumber
 Factory_1.Factory.addGetterSetter(Ring, 'outerRadius', 0, Validators_1.getNumberValidator());
 Util_1.Collection.mapMethods(Ring);
 
-},{"../Factory":10,"../Global":12,"../Shape":16,"../Util":19,"../Validators":20}],54:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Global":11,"../Shape":15,"../Util":18,"../Validators":19}],53:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -9852,7 +9808,7 @@ Factory_1.Factory.backCompat(Sprite, {
 });
 Util_1.Collection.mapMethods(Sprite);
 
-},{"../Animation":4,"../Factory":10,"../Global":12,"../Shape":16,"../Util":19,"../Validators":20}],55:[function(_dereq_,module,exports){
+},{"../Animation":3,"../Factory":9,"../Global":11,"../Shape":15,"../Util":18,"../Validators":19}],54:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -9915,7 +9871,7 @@ Factory_1.Factory.addGetterSetter(Star, 'innerRadius', 0, Validators_1.getNumber
 Factory_1.Factory.addGetterSetter(Star, 'outerRadius', 0, Validators_1.getNumberValidator());
 Util_1.Collection.mapMethods(Star);
 
-},{"../Factory":10,"../Global":12,"../Shape":16,"../Util":19,"../Validators":20}],56:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Global":11,"../Shape":15,"../Util":18,"../Validators":19}],55:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -10256,7 +10212,7 @@ Factory_1.Factory.addGetterSetter(Text, 'text', '', Validators_1.getStringValida
 Factory_1.Factory.addGetterSetter(Text, 'textDecoration', '');
 Util_1.Collection.mapMethods(Text);
 
-},{"../Factory":10,"../Global":12,"../Shape":16,"../Util":19,"../Validators":20}],57:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Global":11,"../Shape":15,"../Util":18,"../Validators":19}],56:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -10616,7 +10572,7 @@ Factory_1.Factory.addGetterSetter(TextPath, 'textDecoration', null);
 Factory_1.Factory.addGetterSetter(TextPath, 'kerningFunc', null);
 Util_1.Collection.mapMethods(TextPath);
 
-},{"../Factory":10,"../Global":12,"../Shape":16,"../Util":19,"../Validators":20,"./Path":50,"./Text":56}],58:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Global":11,"../Shape":15,"../Util":18,"../Validators":19,"./Path":49,"./Text":55}],57:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -11293,7 +11249,7 @@ Factory_1.Factory.backCompat(Transformer, {
 });
 Util_1.Collection.mapMethods(Transformer);
 
-},{"../Factory":10,"../Global":12,"../Group":13,"../Node":15,"../Shape":16,"../Util":19,"../Validators":20,"./Rect":51}],59:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Global":11,"../Group":12,"../Node":14,"../Shape":15,"../Util":18,"../Validators":19,"./Rect":50}],58:[function(_dereq_,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -11356,7 +11312,7 @@ Factory_1.Factory.backCompat(Wedge, {
 });
 Util_1.Collection.mapMethods(Wedge);
 
-},{"../Factory":10,"../Global":12,"../Shape":16,"../Util":19,"../Validators":20}],60:[function(_dereq_,module,exports){
+},{"../Factory":9,"../Global":11,"../Shape":15,"../Util":18,"../Validators":19}],59:[function(_dereq_,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -11542,7 +11498,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],61:[function(_dereq_,module,exports){
+},{}],60:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -11697,7 +11653,7 @@ WaveformDataArrayBufferAdapter.fromResponseData = function fromArrayBufferRespon
 
 module.exports = WaveformDataArrayBufferAdapter;
 
-},{}],62:[function(_dereq_,module,exports){
+},{}],61:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = {
@@ -11705,7 +11661,7 @@ module.exports = {
   object: _dereq_("./object")
 };
 
-},{"./arraybuffer":61,"./object":63}],63:[function(_dereq_,module,exports){
+},{"./arraybuffer":60,"./object":62}],62:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -11864,11 +11820,10 @@ WaveformDataObjectAdapter.prototype = {
 
 module.exports = WaveformDataObjectAdapter;
 
-},{}],64:[function(_dereq_,module,exports){
+},{}],63:[function(_dereq_,module,exports){
 "use strict";
 
 var WaveformData = _dereq_("../../waveform-data");
-var InlineWorker = _dereq_("inline-worker");
 var previousDataObject = null;
 
 /**
@@ -11891,8 +11846,16 @@ var previousDataObject = null;
  * @returns {Function.<AudioBuffer>}
  */
 
+function roundToWholeByte(value) {
+    if (value % 2 !== 0) {
+        value++;
+    }
+    return value;
+}
+
 function arrayBufferConcat(first, second) {
     var tmp = new Uint8Array(first.byteLength + second.byteLength);
+
     tmp.set(new Uint8Array(first), 0);
     tmp.set(new Uint8Array(second), first.byteLength);
     return tmp.buffer;
@@ -12047,25 +12010,28 @@ function getAudioDecoder(options, callback) {
       var buffer_length = audio_buffer_obj.length;
       var offset = header_size;
 
-
       // partial update of data_object (DataView)
       var start = options.lastStart;
       var end = options.lastEnd;
-      if(start && end) {
+
+      if (start && end) {
           // delete operation
-          if(options.isDelete){
+          if (options.isDelete) {
               var previousBuffer = previousDataObject.buffer;
 
-              var scaledStart = calculateWaveformDataLength((start * 2), scale) + header_size;
-              var scaledEnd = calculateWaveformDataLength((end * 2), scale) + header_size;
+              // need to be value divided by 2 or whole array is broken
+              var scaledStart = roundToWholeByte(calculateWaveformDataLength((start * 2), scale) + header_size);
+              var scaledEnd = roundToWholeByte(calculateWaveformDataLength((end * 2), scale) + header_size);
 
               var startPreviousArrayBuffer = previousBuffer.slice(0, scaledStart);
               var endPreviousArrayBuffer = previousBuffer.slice(scaledEnd, previousBuffer.byteLength);
+              var concatedArrayBuffer = arrayBufferConcat(startPreviousArrayBuffer, endPreviousArrayBuffer);
 
-              data_object = new DataView(arrayBufferConcat(startPreviousArrayBuffer, endPreviousArrayBuffer));
+              data_object = new DataView(concatedArrayBuffer);
+              data_length = (data_object.byteLength / 2) - header_size;
 
               // update length value (16 offset)
-              data_object.setInt32(16, data_length, true);
+              data_object.setInt32(16, data_length, true); // Length
 
           }
           // enhance operations (beep, fades, volume)
@@ -12090,126 +12056,9 @@ function getAudioDecoder(options, callback) {
     };
 }
 
-// previous getAudioDecoder function using web worker
-/*function getAudioDecoder(options, callback) {
-  return function onAudioDecoded(audio_buffer) {
-    var worker = new InlineWorker(function() {
-      var INT8_MAX = 127;
-      var INT8_MIN = -128;
-
-      function calculateWaveformDataLength(audio_sample_count, scale) {
-        var data_length = Math.floor(audio_sample_count / scale);
-
-        var samples_remaining = audio_sample_count - (data_length * scale);
-
-        if (samples_remaining > 0) {
-          data_length++;
-        }
-
-        return data_length;
-      }
-
-      this.addEventListener("message", function(evt) {
-
-        var scale = evt.data.scale;
-        var amplitude_scale = evt.data.amplitude_scale;
-        var audio_buffer = evt.data.audio_buffer;
-
-        var data_length = calculateWaveformDataLength(audio_buffer.length, scale);
-        var header_size = 20;
-        var data_object = new DataView(new ArrayBuffer(header_size + data_length * 2));
-        var channels = audio_buffer.channels;
-        var channel;
-        var min_value = Infinity, max_value = -Infinity, scale_counter = 0;
-        var buffer_length = audio_buffer.length;
-        var offset = header_size;
-        var i;
-
-        var logger = '';
-
-        data_object.setInt32(0, 1, true); // Version
-        data_object.setUint32(4, 1, true); // Is 8 bit?
-        data_object.setInt32(8, audio_buffer.sampleRate, true); // Sample rate
-        data_object.setInt32(12, scale, true); // Scale
-        data_object.setInt32(16, data_length, true); // Length
-
-        for (i = 0; i < buffer_length; i++) {
-          var sample = 0;
-
-          for (channel = 0; channel < channels.length; ++channel) {
-              sample += channels[channel][i];
-          }
-
-          sample = Math.floor(INT8_MAX * sample * amplitude_scale / channels.length);
-
-          if (sample < min_value) {
-            min_value = sample;
-
-            if (min_value < INT8_MIN) {
-              min_value = INT8_MIN;
-            }
-          }
-
-          if (sample > max_value) {
-            max_value = sample;
-
-            if (max_value > INT8_MAX) {
-              max_value = INT8_MAX;
-            }
-          }
-
-          if (++scale_counter === scale) {
-            data_object.setInt8(offset++, Math.floor(min_value));
-            data_object.setInt8(offset++, Math.floor(max_value));
-            min_value = Infinity; max_value = -Infinity; scale_counter = 0;
-          }
-        }
-
-
-        if (scale_counter > 0) {
-          data_object.setInt8(offset++, Math.floor(min_value));
-          data_object.setInt8(offset++, Math.floor(max_value));
-        }
-
-        this.postMessage(data_object);
-      });
-    });
-
-    worker.addEventListener("message", function(evt) {
-
-      var data_object = evt.data;
-
-      callback(
-        null,
-        new WaveformData(data_object.buffer, WaveformData.adapters.arraybuffer),
-        audio_buffer
-      );
-    });
-
-    // Construct a simple object with the necessary AudioBuffer data,
-    // as we cannot send an AudioBuffer to a Web Worker.
-    var audio_buffer_obj = {
-      length: audio_buffer.length,
-      sampleRate: audio_buffer.sampleRate,
-      channels: []
-    };
-
-    // Fill in the channels data.
-    for (var channel = 0; channel < audio_buffer.numberOfChannels; ++channel) {
-      audio_buffer_obj.channels[channel] = audio_buffer.getChannelData(channel);
-    }
-
-    worker.postMessage({
-      scale: options.scale,
-      amplitude_scale: options.amplitude_scale,
-      audio_buffer: audio_buffer_obj
-    });
-  };
-}*/
-
 module.exports = getAudioDecoder;
 
-},{"../../waveform-data":69,"inline-worker":3}],65:[function(_dereq_,module,exports){
+},{"../../waveform-data":68}],64:[function(_dereq_,module,exports){
 "use strict";
 
 var getAudioDecoder = _dereq_("./audiodecoder");
@@ -12316,7 +12165,7 @@ function fromAudioObjectBuilder(audio_context, raw_response, options, callback) 
 
 module.exports = fromAudioObjectBuilder;
 
-},{"./audiodecoder":64}],66:[function(_dereq_,module,exports){
+},{"./audiodecoder":63}],65:[function(_dereq_,module,exports){
 "use strict";
 
 var WaveformDataSegment = _dereq_("./segment");
@@ -13035,7 +12884,7 @@ WaveformData.adapter = function WaveformDataAdapter(response_data) {
 
 module.exports = WaveformData;
 
-},{"./point":67,"./segment":68}],67:[function(_dereq_,module,exports){
+},{"./point":66,"./segment":67}],66:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -13110,7 +12959,7 @@ WaveformDataPoint.prototype = {
 
 module.exports = WaveformDataPoint;
 
-},{}],68:[function(_dereq_,module,exports){
+},{}],67:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -13371,7 +13220,7 @@ WaveformDataSegment.prototype = {
 
 module.exports = WaveformDataSegment;
 
-},{}],69:[function(_dereq_,module,exports){
+},{}],68:[function(_dereq_,module,exports){
 "use strict";
 
 var WaveformData = _dereq_("./lib/core");
@@ -13380,14 +13229,14 @@ WaveformData.adapters = _dereq_("./lib/adapters");
 
 module.exports = WaveformData;
 
-},{"./lib/adapters":62,"./lib/core":66}],70:[function(_dereq_,module,exports){
+},{"./lib/adapters":61,"./lib/core":65}],69:[function(_dereq_,module,exports){
 "use strict";
 
 var webAudioBuilder = _dereq_("./lib/builders/webaudio");
 
 module.exports = webAudioBuilder;
 
-},{"./lib/builders/webaudio":65}],71:[function(_dereq_,module,exports){
+},{"./lib/builders/webaudio":64}],70:[function(_dereq_,module,exports){
 module.exports = function (Colors, EventEmitter, WaveformPoints, WaveformSegments, Player, ViewController, TimeController, ZoomController, WaveformBuilder, mixins, Utils, KeyboardHandler, CueEmitter) {
     'use strict';
     function buildUi(container) {
@@ -13649,7 +13498,7 @@ module.exports = function (Colors, EventEmitter, WaveformPoints, WaveformSegment
     };
     return Peaks;
 }(_dereq_('colors.css'), _dereq_('EventEmitter'), _dereq_('peaks/markers/waveform.points'), _dereq_('peaks/markers/waveform.segments'), _dereq_('peaks/player/player'), _dereq_('peaks/views/view-controller'), _dereq_('peaks/views/waveform.timecontroller'), _dereq_('peaks/views/waveform.zoomcontroller'), _dereq_('peaks/waveform/waveform-builder'), _dereq_('peaks/waveform/waveform.mixins'), _dereq_('peaks/waveform/waveform.utils'), _dereq_('peaks/player/player.keyboard'), _dereq_('peaks/cues/cue-emitter'));
-},{"EventEmitter":2,"colors.css":1,"peaks/cues/cue-emitter":72,"peaks/markers/waveform.points":76,"peaks/markers/waveform.segments":77,"peaks/player/player":78,"peaks/player/player.keyboard":79,"peaks/views/view-controller":84,"peaks/views/waveform.timecontroller":87,"peaks/views/waveform.zoomcontroller":88,"peaks/waveform/waveform-builder":92,"peaks/waveform/waveform.mixins":94,"peaks/waveform/waveform.utils":95}],72:[function(_dereq_,module,exports){
+},{"EventEmitter":2,"colors.css":1,"peaks/cues/cue-emitter":71,"peaks/markers/waveform.points":75,"peaks/markers/waveform.segments":76,"peaks/player/player":77,"peaks/player/player.keyboard":78,"peaks/views/view-controller":83,"peaks/views/waveform.timecontroller":86,"peaks/views/waveform.zoomcontroller":87,"peaks/waveform/waveform-builder":91,"peaks/waveform/waveform.mixins":93,"peaks/waveform/waveform.utils":94}],71:[function(_dereq_,module,exports){
 module.exports = function (Cue) {
     'use strict';
     var isHeadless = /HeadlessChrome/.test(navigator.userAgent);
@@ -13829,7 +13678,7 @@ module.exports = function (Cue) {
     };
     return CueEmitter;
 }(_dereq_('peaks/cues/cue'));
-},{"peaks/cues/cue":73}],73:[function(_dereq_,module,exports){
+},{"peaks/cues/cue":72}],72:[function(_dereq_,module,exports){
 module.exports = function () {
     'use strict';
     function Cue(time, type, id) {
@@ -13845,7 +13694,7 @@ module.exports = function () {
     };
     return Cue;
 }();
-},{}],74:[function(_dereq_,module,exports){
+},{}],73:[function(_dereq_,module,exports){
 module.exports = function (Utils) {
     'use strict';
     function validatePoint(time, labelText) {
@@ -13927,7 +13776,7 @@ module.exports = function (Utils) {
     };
     return Point;
 }(_dereq_('peaks/waveform/waveform.utils'));
-},{"peaks/waveform/waveform.utils":95}],75:[function(_dereq_,module,exports){
+},{"peaks/waveform/waveform.utils":94}],74:[function(_dereq_,module,exports){
 module.exports = function (Utils) {
     'use strict';
     function validateSegment(startTime, endTime, validationContext) {
@@ -14025,7 +13874,7 @@ module.exports = function (Utils) {
     };
     return Segment;
 }(_dereq_('peaks/waveform/waveform.utils'));
-},{"peaks/waveform/waveform.utils":95}],76:[function(_dereq_,module,exports){
+},{"peaks/waveform/waveform.utils":94}],75:[function(_dereq_,module,exports){
 module.exports = function (Point, Utils) {
     'use strict';
     function WaveformPoints(peaks) {
@@ -14131,7 +13980,7 @@ module.exports = function (Point, Utils) {
     };
     return WaveformPoints;
 }(_dereq_('peaks/markers/point'), _dereq_('peaks/waveform/waveform.utils'));
-},{"peaks/markers/point":74,"peaks/waveform/waveform.utils":95}],77:[function(_dereq_,module,exports){
+},{"peaks/markers/point":73,"peaks/waveform/waveform.utils":94}],76:[function(_dereq_,module,exports){
 module.exports = function (Colors, Segment, Utils) {
     'use strict';
     function WaveformSegments(peaks) {
@@ -14274,7 +14123,7 @@ module.exports = function (Colors, Segment, Utils) {
     };
     return WaveformSegments;
 }(_dereq_('colors.css'), _dereq_('peaks/markers/segment'), _dereq_('peaks/waveform/waveform.utils'));
-},{"colors.css":1,"peaks/markers/segment":75,"peaks/waveform/waveform.utils":95}],78:[function(_dereq_,module,exports){
+},{"colors.css":1,"peaks/markers/segment":74,"peaks/waveform/waveform.utils":94}],77:[function(_dereq_,module,exports){
 module.exports = function (Utils) {
     'use strict';
     function Player(peaks, mediaElement) {
@@ -14381,7 +14230,7 @@ module.exports = function (Utils) {
     };
     return Player;
 }(_dereq_('peaks/waveform/waveform.utils'));
-},{"peaks/waveform/waveform.utils":95}],79:[function(_dereq_,module,exports){
+},{"peaks/waveform/waveform.utils":94}],78:[function(_dereq_,module,exports){
 module.exports = function () {
     'use strict';
     var nodes = [
@@ -14440,7 +14289,7 @@ module.exports = function () {
     };
     return KeyboardHandler;
 }();
-},{}],80:[function(_dereq_,module,exports){
+},{}],79:[function(_dereq_,module,exports){
 module.exports = function () {
     'use strict';
     function MouseDragHandler(stage, handlers) {
@@ -14525,7 +14374,7 @@ module.exports = function () {
     };
     return MouseDragHandler;
 }();
-},{}],81:[function(_dereq_,module,exports){
+},{}],80:[function(_dereq_,module,exports){
 module.exports = function (Utils, Konva) {
     'use strict';
     function PlayheadLayer(peaks, view, showTime, time) {
@@ -14678,7 +14527,7 @@ module.exports = function (Utils, Konva) {
     };
     return PlayheadLayer;
 }(_dereq_('peaks/waveform/waveform.utils'), _dereq_('konva'));
-},{"konva":42,"peaks/waveform/waveform.utils":95}],82:[function(_dereq_,module,exports){
+},{"konva":41,"peaks/waveform/waveform.utils":94}],81:[function(_dereq_,module,exports){
 module.exports = function (Utils, Konva) {
     'use strict';
     function PointsLayer(peaks, view, allowEditing, showLabels) {
@@ -14843,7 +14692,7 @@ module.exports = function (Utils, Konva) {
     };
     return PointsLayer;
 }(_dereq_('peaks/waveform/waveform.utils'), _dereq_('konva'));
-},{"konva":42,"peaks/waveform/waveform.utils":95}],83:[function(_dereq_,module,exports){
+},{"konva":41,"peaks/waveform/waveform.utils":94}],82:[function(_dereq_,module,exports){
 module.exports = function (WaveformShape, Utils, Konva) {
     'use strict';
     function SegmentsLayer(peaks, view, allowEditing) {
@@ -15067,7 +14916,7 @@ module.exports = function (WaveformShape, Utils, Konva) {
     };
     return SegmentsLayer;
 }(_dereq_('peaks/views/waveform-shape'), _dereq_('peaks/waveform/waveform.utils'), _dereq_('konva'));
-},{"konva":42,"peaks/views/waveform-shape":85,"peaks/waveform/waveform.utils":95}],84:[function(_dereq_,module,exports){
+},{"konva":41,"peaks/views/waveform-shape":84,"peaks/waveform/waveform.utils":94}],83:[function(_dereq_,module,exports){
 module.exports = function (WaveformOverview, WaveformZoomView, Utils) {
     'use strict';
     function ViewController(peaks) {
@@ -15125,7 +14974,7 @@ module.exports = function (WaveformOverview, WaveformZoomView, Utils) {
     };
     return ViewController;
 }(_dereq_('peaks/views/waveform.overview'), _dereq_('peaks/views/waveform.zoomview'), _dereq_('peaks/waveform/waveform.utils'));
-},{"peaks/views/waveform.overview":86,"peaks/views/waveform.zoomview":89,"peaks/waveform/waveform.utils":95}],85:[function(_dereq_,module,exports){
+},{"peaks/views/waveform.overview":85,"peaks/views/waveform.zoomview":88,"peaks/waveform/waveform.utils":94}],84:[function(_dereq_,module,exports){
 module.exports = function (Utils, Konva) {
     'use strict';
     function scaleY(amplitude, height, scale) {
@@ -15180,7 +15029,7 @@ module.exports = function (Utils, Konva) {
     };
     return WaveformShape;
 }(_dereq_('peaks/waveform/waveform.utils'), _dereq_('konva'));
-},{"konva":42,"peaks/waveform/waveform.utils":95}],86:[function(_dereq_,module,exports){
+},{"konva":41,"peaks/waveform/waveform.utils":94}],85:[function(_dereq_,module,exports){
 module.exports = function (PlayheadLayer, PointsLayer, SegmentsLayer, WaveformShape, MouseDragHandler, WaveformAxis, Utils, Konva) {
     'use strict';
     function WaveformOverview(waveformData, container, peaks) {
@@ -15364,7 +15213,7 @@ module.exports = function (PlayheadLayer, PointsLayer, SegmentsLayer, WaveformSh
     };
     return WaveformOverview;
 }(_dereq_('peaks/views/playhead-layer'), _dereq_('peaks/views/points-layer'), _dereq_('peaks/views/segments-layer'), _dereq_('peaks/views/waveform-shape'), _dereq_('peaks/views/helpers/mousedraghandler'), _dereq_('peaks/waveform/waveform.axis'), _dereq_('peaks/waveform/waveform.utils'), _dereq_('konva'));
-},{"konva":42,"peaks/views/helpers/mousedraghandler":80,"peaks/views/playhead-layer":81,"peaks/views/points-layer":82,"peaks/views/segments-layer":83,"peaks/views/waveform-shape":85,"peaks/waveform/waveform.axis":93,"peaks/waveform/waveform.utils":95}],87:[function(_dereq_,module,exports){
+},{"konva":41,"peaks/views/helpers/mousedraghandler":79,"peaks/views/playhead-layer":80,"peaks/views/points-layer":81,"peaks/views/segments-layer":82,"peaks/views/waveform-shape":84,"peaks/waveform/waveform.axis":92,"peaks/waveform/waveform.utils":94}],86:[function(_dereq_,module,exports){
 module.exports = function () {
     'use strict';
     function TimeController(peaks) {
@@ -15380,7 +15229,7 @@ module.exports = function () {
     };
     return TimeController;
 }();
-},{}],88:[function(_dereq_,module,exports){
+},{}],87:[function(_dereq_,module,exports){
 module.exports = function () {
     'use strict';
     function ZoomController(peaks, zoomLevels) {
@@ -15420,7 +15269,7 @@ module.exports = function () {
     };
     return ZoomController;
 }();
-},{}],89:[function(_dereq_,module,exports){
+},{}],88:[function(_dereq_,module,exports){
 module.exports = function (WaveformAxis, Utils, PlayheadLayer, PointsLayer, SegmentsLayer, WaveformShape, MouseDragHandler, AnimatedZoomAdapter, StaticZoomAdapter, Konva) {
     'use strict';
     function WaveformZoomView(waveformData, container, peaks) {
@@ -15623,7 +15472,7 @@ module.exports = function (WaveformAxis, Utils, PlayheadLayer, PointsLayer, Segm
     };
     return WaveformZoomView;
 }(_dereq_('peaks/waveform/waveform.axis'), _dereq_('peaks/waveform/waveform.utils'), _dereq_('peaks/views/playhead-layer'), _dereq_('peaks/views/points-layer'), _dereq_('peaks/views/segments-layer'), _dereq_('peaks/views/waveform-shape'), _dereq_('peaks/views/helpers/mousedraghandler'), _dereq_('peaks/views/zooms/animated'), _dereq_('peaks/views/zooms/static'), _dereq_('konva'));
-},{"konva":42,"peaks/views/helpers/mousedraghandler":80,"peaks/views/playhead-layer":81,"peaks/views/points-layer":82,"peaks/views/segments-layer":83,"peaks/views/waveform-shape":85,"peaks/views/zooms/animated":90,"peaks/views/zooms/static":91,"peaks/waveform/waveform.axis":93,"peaks/waveform/waveform.utils":95}],90:[function(_dereq_,module,exports){
+},{"konva":41,"peaks/views/helpers/mousedraghandler":79,"peaks/views/playhead-layer":80,"peaks/views/points-layer":81,"peaks/views/segments-layer":82,"peaks/views/waveform-shape":84,"peaks/views/zooms/animated":89,"peaks/views/zooms/static":90,"peaks/waveform/waveform.axis":92,"peaks/waveform/waveform.utils":94}],89:[function(_dereq_,module,exports){
 module.exports = function (Konva) {
     'use strict';
     return {
@@ -15683,7 +15532,7 @@ module.exports = function (Konva) {
         }
     };
 }(_dereq_('konva'));
-},{"konva":42}],91:[function(_dereq_,module,exports){
+},{"konva":41}],90:[function(_dereq_,module,exports){
 module.exports = function (Utils) {
     'use strict';
     return {
@@ -15700,7 +15549,7 @@ module.exports = function (Utils) {
         }
     };
 }(_dereq_('peaks/waveform/waveform.utils'));
-},{"peaks/waveform/waveform.utils":95}],92:[function(_dereq_,module,exports){
+},{"peaks/waveform/waveform.utils":94}],91:[function(_dereq_,module,exports){
 module.exports = function (WaveformData, webaudioBuilder, Utils) {
     'use strict';
     var isXhr2 = 'withCredentials' in new XMLHttpRequest();
@@ -15827,7 +15676,7 @@ module.exports = function (WaveformData, webaudioBuilder, Utils) {
     };
     return WaveformBuilder;
 }(_dereq_('waveform-data'), _dereq_('waveform-data/webaudio'), _dereq_('peaks/waveform/waveform.utils'));
-},{"peaks/waveform/waveform.utils":95,"waveform-data":69,"waveform-data/webaudio":70}],93:[function(_dereq_,module,exports){
+},{"peaks/waveform/waveform.utils":94,"waveform-data":68,"waveform-data/webaudio":69}],92:[function(_dereq_,module,exports){
 module.exports = function (Utils, Konva) {
     'use strict';
     function WaveformAxis(view, layer, options) {
@@ -15910,7 +15759,7 @@ module.exports = function (Utils, Konva) {
     };
     return WaveformAxis;
 }(_dereq_('peaks/waveform/waveform.utils'), _dereq_('konva'));
-},{"konva":42,"peaks/waveform/waveform.utils":95}],94:[function(_dereq_,module,exports){
+},{"konva":41,"peaks/waveform/waveform.utils":94}],93:[function(_dereq_,module,exports){
 module.exports = function (Konva) {
     'use strict';
     function createSegmentMarker(options) {
@@ -16144,7 +15993,7 @@ module.exports = function (Konva) {
         createSegmentLabel: createSegmentLabel
     };
 }(_dereq_('konva'));
-},{"konva":42}],95:[function(_dereq_,module,exports){
+},{"konva":41}],94:[function(_dereq_,module,exports){
 module.exports = function () {
     'use strict';
     if (typeof Number.isFinite !== 'function') {
@@ -16247,6 +16096,6 @@ module.exports = function () {
         }
     };
 }();
-},{}]},{},[71])(71)
+},{}]},{},[70])(70)
 });
 //# sourceMappingURL=peaks.js.map

@@ -63,7 +63,9 @@
     "test-watch": "npm test -- --auto-watch --no-single-run",
     "prestart": "npm run build",
     "prepublish": "npm run build",
-    "start": "serve --listen 8080 --no-clipboard"
+    "start": "serve --listen 8080 --no-clipboard",
+    "copy-to-audio-editor": "cp -R ./peaks.js ../audio-editor/public_html/js",
+    "build-dev": "npm-run-all build copy-to-audio-editor"
   },
   "devDependencies": {
     "browserify": "~16.2.3",
@@ -85,6 +87,7 @@
     "karma-safari-launcher": "~1.0.0",
     "karma-spec-reporter": "~0.0.32",
     "mocha": "~5.2.0",
+    "npm-run-all": "^4.1.5",
     "serve": "~10.0.2",
     "sinon": "~7.1.1",
     "sinon-chai": "~3.2.0",
